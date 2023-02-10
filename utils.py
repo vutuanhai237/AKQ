@@ -1,24 +1,27 @@
-import cv2
-
-def images_the_same(image1, image2):
+def bytes_to_bits(input_bytes):
     """
-    :param image1: path of image1
-    :param image2: path of image2
-    :return: True if images are the same, False if images are not the same
+    Convert bytes to an array of bits
+
+    Bytes are converted little endianness following the paper
     """
-    im1 = cv2.imread(image1)
-    im2 = cv2.imread(image2)
+    bit_string = ''.join(format(byte, '08b')[::-1] for byte in input_bytes)
+    return list(map(int, list(bit_string)))
 
-    if im1.shape != im2.shape:
-        return False
+def bitstring_to_bytes(s):
+    """
+    Convert a string of bits to bytes with bytes stored little endian
+    """
+    return bytes([int(s[i:i+8][::-1], 2) for i in range(0, len(s), 8)])
 
-    difference = cv2.subtract(im1, im2)
-    b, g, r = cv2.split(difference)
+def round_up(x):
+    """
+    Round x.5 up always
+    """
+    return round(x + 0.000001)
 
-    if(cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 
-        and cv2.countNonZero(r) == 0):
-        return True
-    return False
-
-
-
+def xor_bytes(a, b):
+    """
+    XOR two byte arrays, assume that they are
+    of the same length
+    """
+    return bytes(a^b for a,b in zip(a,b))

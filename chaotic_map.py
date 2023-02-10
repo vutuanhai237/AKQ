@@ -2,6 +2,28 @@ import os
 from PIL import Image
 import utils
 from natsort import natsorted
+import cv2
+
+def images_the_same(image1, image2):
+    """
+    :param image1: path of image1
+    :param image2: path of image2
+    :return: True if images are the same, False if images are not the same
+    """
+    im1 = cv2.imread(image1)
+    im2 = cv2.imread(image2)
+
+    if im1.shape != im2.shape:
+        return False
+
+    difference = cv2.subtract(im1, im2)
+    b, g, r = cv2.split(difference)
+
+    if(cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0
+        and cv2.countNonZero(r) == 0):
+        return True
+    return False
+
 def resize_img(img) -> Image:
     min_size = min(img.size)
     imageBoxSize = 200 # maximum width of image placeholder
@@ -12,7 +34,6 @@ def resize_img(img) -> Image:
         resized_im = img.resize((min_size,min_size))
 
     return resized_im
-
 
 def cattify(input_img):
 
@@ -46,4 +67,4 @@ def cattify(input_img):
 
 
 
-find_period('SAMPLE_IMAGES/cat.jpg')
+cattify('SAMPLE_IMAGES/cat.jpg')
