@@ -27,7 +27,7 @@ def images_the_same(image1, image2):
 
 def resize_img(img) -> Image:
     min_size = min(img.size)
-    imageBoxSize = 50 # maximum width of image placeholder
+    imageBoxSize = 200 # maximum width of image placeholder
 
     if min_size >= imageBoxSize:
         resized_im = img.resize((imageBoxSize,imageBoxSize)) # arnold's cat map must be square
@@ -72,9 +72,6 @@ def decode(path, save_path, iteration):
     img = Image.open(path)
     img = resize_img(img)
     namex = os.path.splitext(file_name)[0]
-
-    images_path = './data/'
-    img.save(images_path + f'{namex}-0.png')
     
     for i in range(0, iteration):
         canvas = Image.new(img.mode, (img.width, img.height))
@@ -83,12 +80,12 @@ def decode(path, save_path, iteration):
                 nx = (2 * x + y) % canvas.width
                 ny = (x + y) % canvas.height
                 canvas.putpixel((nx, canvas.height-ny-1), img.getpixel((x, canvas.height-y-1)))
-        new_image = images_path + f'{namex}-{i}.png'
+        new_image = f'./images/{namex}-{i}.png'
         canvas.save(new_image)
         img = Image.open(new_image)
     for i in range(0, iteration - 1):
-            os.remove(images_path + f'{namex}-{i}.png')
-    os.rename(images_path + f'{namex}-{iteration - 1}.png',save_path)
+            os.remove(f'./images/{namex}-{i}.png')
+    os.rename(f'./images/{namex}-{iteration - 1}.png',save_path)
     return img
 # iteration = cattify('images/cat.jpg')
 # print(iteration)
