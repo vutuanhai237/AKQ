@@ -2,10 +2,25 @@ import os
 from PIL import Image
 import utils
 from natsort import natsorted
-import cv2
+import cv2, numpy as np
 import random
+from shutil import move
+def images_the_same2(im1, im2) -> bool:
+    im1 = cv2.imread(im1)
+    im2 = np.array(im2)
+    im2 = im2[:, :, ::-1].copy()
+    if im1.shape != im2.shape:
+        return False
 
-def images_the_same(image1, image2):
+    difference = cv2.subtract(im1, im2)
+    b, g, r = cv2.split(difference)
+
+    if(cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0
+        and cv2.countNonZero(r) == 0):
+        return True
+    return False
+
+def images_the_same(image1, image2) -> bool:
     """
     :param image1: path of image1
     :param image2: path of image2
@@ -36,13 +51,11 @@ def resize_img(img) -> Image:
 
     return resized_im
 
-def encode(path, save_path):
-
+def encode(path, save_path) -> int:
     file_name = os.path.basename(path)
     img = Image.open(path)
     img = resize_img(img)
     namex = os.path.splitext(file_name)[0]
-
     images_path = './images/'
     img.save(images_path + f'{namex}-0.png')
     iteration = 0
@@ -58,13 +71,13 @@ def encode(path, save_path):
         new_image = images_path + f'{namex}-{iteration}.png'
         canvas.save(new_image)
         img = Image.open(new_image)
-        if images_the_same(images_path + f'{namex}-0.png', new_image):
+        if images_the_same2(images_path + f'{namex}-0.png', img):
             done = True
     index = random.randint(int(iteration/4), int(3*iteration/4))
     for i in range(0, iteration + 1):
         if i != index:
             os.remove(images_path + f'{namex}-{i}.png')
-    os.rename(f'./images/{namex}-{index}.png', save_path)
+    move(f'./images/{namex}-{index}.png', save_path)
     return iteration - index
 
 def decode(path, save_path, iteration):
@@ -72,7 +85,6 @@ def decode(path, save_path, iteration):
     img = Image.open(path)
     img = resize_img(img)
     namex = os.path.splitext(file_name)[0]
-    
     for i in range(0, iteration):
         canvas = Image.new(img.mode, (img.width, img.height))
         for x in range(canvas.width):
@@ -82,11 +94,14 @@ def decode(path, save_path, iteration):
                 canvas.putpixel((nx, canvas.height-ny-1), img.getpixel((x, canvas.height-y-1)))
         new_image = f'./images/{namex}-{i}.png'
         canvas.save(new_image)
-        img = Image.open(new_image)
+        if i != iteration - 1:
+            img = Image.open(new_image)
     for i in range(0, iteration - 1):
             os.remove(f'./images/{namex}-{i}.png')
-    os.rename(f'./images/{namex}-{iteration - 1}.png',save_path)
+    move(f'./images/{namex}-{iteration - 1}.png',save_path)
     return img
+
+# encode('./images/cat.jpg', './images/cat_map.png')
 # iteration = cattify('images/cat.jpg')
 # print(iteration)
 # decode('./data/cat_map.png', './data/cat_unmap.png', iteration)

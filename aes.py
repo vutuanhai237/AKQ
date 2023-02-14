@@ -30,7 +30,7 @@ def decryptImage(path, save_path, key):
         with open(save_path, "wb") as oldfile:
             oldfile.write(ctunpad)
 
-pk = open("./key/pk.txt", "rb").read()
-c, key = Kyber512.enc(pk)
-encryptImage('./images/tree.png', './tree_en.png', key)
-decryptImage('./tree_en.png', './tree_de.png', key)
+# pk = open("./key/pk.txt", "rb").read()
+# c, key = Kyber512.enc(pk)
+# encryptImage('./images/tree.png', './tree_en.png', key)
+# decryptImage('./tree_en.png', './tree_de.png', key)
