@@ -1,0 +1,6 @@
+{
+    "name": "tree",
+    "c": "./key/c_tree.txt",
+    "period": 101,
+    "path": "./images/tree_en.png"
+}

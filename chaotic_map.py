@@ -5,6 +5,20 @@ from natsort import natsorted
 import cv2, numpy as np
 import random
 from shutil import move
+from skimage.metrics import structural_similarity
+def mse(img1, img2):
+    img1 = cv2.imread(img1)
+    img2 = cv2.imread(img2)
+    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    h, w = img1.shape
+    diff = cv2.subtract(img1, img2)
+    err = np.sum(diff**2)
+    mse = err/(float(h*w))
+    if mse < 5:
+        return True
+    return False
+
 def images_the_same2(im1, im2) -> bool:
     im1 = cv2.imread(im1)
     im2 = np.array(im2)
@@ -71,7 +85,7 @@ def encode(path, save_path) -> int:
         new_image = images_path + f'{namex}-{iteration}.png'
         canvas.save(new_image)
         img = Image.open(new_image)
-        if images_the_same2(images_path + f'{namex}-0.png', img):
+        if mse(images_path + f'{namex}-0.png', new_image):
             done = True
     index = random.randint(int(iteration/4), int(3*iteration/4))
     for i in range(0, iteration + 1):
@@ -105,3 +119,5 @@ def decode(path, save_path, iteration):
 # iteration = cattify('images/cat.jpg')
 # print(iteration)
 # decode('./data/cat_map.png', './data/cat_unmap.png', iteration)
+
+#print(mse('./images/cat_de.png','./images/cat_de2.png'))
