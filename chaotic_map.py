@@ -5,7 +5,6 @@ from natsort import natsorted
 import cv2, numpy as np
 import random
 from shutil import move
-from skimage.metrics import structural_similarity
 def mse(img1, img2):
     img1 = cv2.imread(img1)
     img2 = cv2.imread(img2)
@@ -55,17 +54,12 @@ def images_the_same(image1, image2) -> bool:
     return False
 
 def resize_img(img) -> Image:
-    min_size = min(img.size)
-    imageBoxSize = 200 # maximum width of image placeholder
 
-    if min_size >= imageBoxSize:
-        resized_im = img.resize((imageBoxSize,imageBoxSize)) # arnold's cat map must be square
-    else:
-        resized_im = img.resize((min_size,min_size))
+    resized_im = img.resize((100,100))
 
     return resized_im
 
-def encode(path, save_path) -> int:
+def map(path, save_path) -> int:
     file_name = os.path.basename(path)
     img = Image.open(path)
     img = resize_img(img)
@@ -87,6 +81,7 @@ def encode(path, save_path) -> int:
         img = Image.open(new_image)
         if mse(images_path + f'{namex}-0.png', new_image):
             done = True
+    print(iteration)
     index = random.randint(int(iteration/4), int(3*iteration/4))
     for i in range(0, iteration + 1):
         if i != index:
@@ -94,7 +89,7 @@ def encode(path, save_path) -> int:
     move(f'./images/{namex}-{index}.png', save_path)
     return iteration - index
 
-def decode(path, save_path, iteration):
+def unmap(path, save_path, iteration):
     file_name = os.path.basename(path)
     img = Image.open(path)
     img = resize_img(img)

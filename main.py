@@ -1,8 +1,7 @@
-from aes import encryptImage, decryptImage
-from chaotic_map import encode, decode
+import aes
+import chaotic_map
 from kyber import Kyber512
-import os
-import json
+import os, json, time, numpy as np
 def gen_key(name):
     pk, sk = Kyber512.keygen()
     with open(f"./key/pk_{name}.txt", "wb") as binary_file:
@@ -12,17 +11,16 @@ def gen_key(name):
 
 def encrypt_image(path, save_path, mode):
     name = os.path.basename(path).split(".")[0]
-    gen_key(name)
     pk = open(f"./key/pk_{name}.txt", "rb").read()
     c, key = Kyber512.enc(pk)
     with open(f"./key/c_{name}.txt", "wb") as binary_file:
         binary_file.write(c)
     if mode == 'normal':
-        encryptImage(path, save_path, key)
+        aes.encryptImage(path, save_path, key)
         return
     if mode == 'chaotic':
-        period = encode(path, f"{name}_map.png")
-        encryptImage(f"{name}_map.png", save_path, key)
+        period = chaotic_map.map(path, f"{name}_map.png")
+        aes.encryptImage(f"{name}_map.png", save_path, key)
         json_file = {
             "name": name,
             "c": f"./key/c_{name}.txt",
@@ -43,16 +41,37 @@ def decrypt_image(save_path, mode):
     key = Kyber512.dec(c, sk)
     path = data['path']
     if mode == 'normal':
-        decryptImage(path, save_path, key)
+        aes.decryptImage(path, save_path, key)
         return
     if mode == 'chaotic':
-        decryptImage(path, save_path, key)
-        decode(save_path, save_path, data['period'])
+        aes.decryptImage(path, save_path, key)
+        chaotic_map.unmap(save_path, save_path, data['period'])
         return
     return
 
 name = 'tree'
-# c, iteration = encrypt_image('./images/' + name + '.png', './images/' + name + '_en.png', './key/pk.txt', 'chaotic')
-# encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
+gen, en, de = [], [], []
 
-decrypt_image(f'./images/{name}_de.png','chaotic')
+for _ in range(0, 1):
+    start_time = time.time()
+    gen_key(name)
+    gen.append(time.time() - start_time)
+
+    start_time = time.time()
+    encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
+    en.append(time.time() - start_time)
+
+    start_time = time.time()
+    decrypt_image(f'./images/{name}_de.png','chaotic')
+    de.append(time.time() - start_time)
+
+gen = np.asarray(gen)
+en = np.asarray(en)
+de = np.asarray(de)
+
+print(np.average(gen))
+print(np.std(gen))
+print(np.average(en))
+print(np.std(en))
+print(np.average(de))
+print(np.std(de))
