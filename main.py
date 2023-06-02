@@ -33,9 +33,8 @@ def encrypt_image(path, save_path, mode):
             outfile.write(json_object)
         return
 
-def decrypt_image(save_path, mode):
-    data = json.load(open('./database/tree.json'))
-    name = data['name']
+def decrypt_image(name, save_path, mode):
+    data = json.load(open(f'./database/{name}.json'))
     sk = open(f"./key/sk_{name}.txt", "rb").read()
     c = open(data['c'], "rb").read()
     key = Kyber512.dec(c, sk)
@@ -49,29 +48,33 @@ def decrypt_image(save_path, mode):
         return
     return
 
-name = 'tree'
-gen, en, de = [], [], []
+name = 'cat'
+#gen_key(name)
+# encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
+decrypt_image(name, f'./images/{name}_de.png','chaotic')
 
-for _ in range(0, 1):
-    start_time = time.time()
-    gen_key(name)
-    gen.append(time.time() - start_time)
+# gen, en, de = [], [], []
 
-    start_time = time.time()
-    encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
-    en.append(time.time() - start_time)
+# for _ in range(0, 1):
+#     start_time = time.time()``
+#     gen_key(name)
+#     gen.append(time.time() - start_time)
 
-    start_time = time.time()
-    decrypt_image(f'./images/{name}_de.png','chaotic')
-    de.append(time.time() - start_time)
+#     start_time = time.time()
+#     encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
+#     en.append(time.time() - start_time)
 
-gen = np.asarray(gen)
-en = np.asarray(en)
-de = np.asarray(de)
+#     start_time = time.time()
+#     decrypt_image(f'./images/{name}_de.png','chaotic')
+#     de.append(time.time() - start_time)
 
-print(np.average(gen))
-print(np.std(gen))
-print(np.average(en))
-print(np.std(en))
-print(np.average(de))
-print(np.std(de))
+# gen = np.asarray(gen)
+# en = np.asarray(en)
+# de = np.asarray(de)
+
+# print(np.average(gen))
+# print(np.std(gen))
+# print(np.average(en))
+# print(np.std(en))
+# print(np.average(de))
+# print(np.std(de))
