@@ -1,0 +1,6 @@
+{
+    "name": "lenna64",
+    "c": "./key/c_lenna64.txt",
+    "period": 27,
+    "path": "./images/lenna64_en.png"
+}

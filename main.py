@@ -19,12 +19,13 @@ def encrypt_image(path, save_path, mode):
         aes.encryptImage(path, save_path, key)
         return
     if mode == 'chaotic':
-        period = chaotic_map.map(path, f"{name}_map.png")
+        p_hat = chaotic_map.random_map(path, f"{name}_map.png")
+        print(p_hat)
         aes.encryptImage(f"{name}_map.png", save_path, key)
         json_file = {
             "name": name,
             "c": f"./key/c_{name}.txt",
-            "period": period,
+            "period": p_hat,
             "path": save_path
         }
         
@@ -44,34 +45,34 @@ def decrypt_image(name, save_path, mode):
         return
     if mode == 'chaotic':
         aes.decryptImage(path, save_path, key)
-        chaotic_map.unmap(save_path, save_path, data['period'])
+        chaotic_map.specific_map(save_path, save_path, data['period'])
         return
     return
 
-name = 'cat'
+name = 'lenna512'
 #gen_key(name)
-# encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
-decrypt_image(name, f'./images/{name}_de.png','chaotic')
+#encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
+#decrypt_image(name, f'./images/{name}_de.png','chaotic')
 
-# gen, en, de = [], [], []
+gen, en, de = [], [], []
 
-# for _ in range(0, 1):
-#     start_time = time.time()``
-#     gen_key(name)
-#     gen.append(time.time() - start_time)
+for _ in range(0, 2):
+    start_time = time.time()
+    gen_key(name)
+    gen.append(time.time() - start_time)
+    print(1)
+    start_time = time.time()
+    encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
+    en.append(time.time() - start_time)
+    print(1)
+    start_time = time.time()
+    decrypt_image(name, f'./images/{name}_de.png','chaotic')
+    de.append(time.time() - start_time)
 
-#     start_time = time.time()
-#     encrypt_image(f'./images/{name}.png', f'./images/{name}_en.png', 'chaotic')
-#     en.append(time.time() - start_time)
-
-#     start_time = time.time()
-#     decrypt_image(f'./images/{name}_de.png','chaotic')
-#     de.append(time.time() - start_time)
-
-# gen = np.asarray(gen)
-# en = np.asarray(en)
-# de = np.asarray(de)
-
+gen = np.asarray(gen)
+en = np.asarray(en)
+de = np.asarray(de)
+print(f'{np.round(np.average(gen), 4)} $\pm$ {np.round(np.std(gen), 4)} & {np.round(np.average(en), 4)} $\pm$ {np.round(np.std(en), 4)} & {np.round(np.average(de), 4)} $\pm$ {np.round(np.std(de), 4)}')
 # print(np.average(gen))
 # print(np.std(gen))
 # print(np.average(en))
