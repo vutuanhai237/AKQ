@@ -1,5 +1,7 @@
-# A post - quantum image exchange scheme
+# AKQ: A hybrid quantum-classical image encryption system
 
-The project for image processing & computer vision subject.
+The project for image encryption & quantum computing fields.
 
-Author: Vu Tuan Hai, Tran Khanh Nguyen.
+Author: Tran Khanh Nguyen, Nguyen Thi Thanh Truc, Vu Tuan Hai
+
+The corresponding paper has been accepted in [RIVF 2023](https://rivf2023.org/).
